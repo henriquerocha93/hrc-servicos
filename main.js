@@ -502,7 +502,7 @@
       });
 
       if (countEl) {
-        countEl.textContent = `${filtered.length} local${filtered.length === 1 ? '' : 'is'}`;
+        countEl.textContent = `${filtered.length} ${filtered.length === 1 ? 'local' : 'locais'}`;
       }
 
       if (filtered.length === 0) {
