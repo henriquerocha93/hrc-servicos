@@ -180,6 +180,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -203,6 +204,7 @@
         <li><a href="#condominios" class="nav__link">Condomínios</a></li>
         <li><a href="#empresas" class="nav__link">Empresas</a></li>
         <li><a href="#diferenciais" class="nav__link">Diferenciais</a></li>
+        <li><a href="#regioes" class="nav__link">Onde Atuamos</a></li>
         <li><a href="#orcamento" class="nav__link">Orçamento</a></li>
         <li><a href="#contato" class="nav__link">Contato</a></li>
       </ul>
@@ -550,55 +552,91 @@
       </div>
     </section>
 
-    <!-- REGIOES ATENDIDAS (SEO LOCAL) -->
+    <!-- REGIOES ATENDIDAS / MAPA INTERATIVO (SEO LOCAL) -->
     <section class="regioes section" id="regioes">
       <div class="container">
         <div class="section__header" data-animate="fade-up">
           <span class="section__label">Onde Atuamos</span>
-          <h2 class="section__title">Atendimento em Porto Alegre e Região Metropolitana</h2>
-          <p class="section__subtitle">Prestamos serviços profissionais de limpeza e zeladoria em diversas localidades com rapidez e equipe dedicada.</p>
+          <h2 class="section__title">Mapa de Cobertura e Atendimento</h2>
+          <p class="section__subtitle">Explore de forma interativa as regiões e bairros atendidos pela HRC Serviços em Porto Alegre e cidades vizinhas. Clique nos pontos para consultar detalhes de atendimento.</p>
         </div>
-        <div class="regioes__grid" data-animate="fade-up">
-          <div class="regioes__card">
-            <div class="regioes__card-header">
-              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-              <h3>Porto Alegre (Todos os Bairros)</h3>
+
+        <!-- Filtros do Mapa -->
+        <div class="map-filters" data-animate="fade-up">
+          <button type="button" class="map-filter-btn active" data-filter="all">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon></svg>
+            Todas as Regiões (20+)
+          </button>
+          <button type="button" class="map-filter-btn" data-filter="poa">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+            Porto Alegre (Bairros)
+          </button>
+          <button type="button" class="map-filter-btn" data-filter="metro">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+            Região Metropolitana & Vale dos Sinos
+          </button>
+        </div>
+
+        <!-- Container do Mapa e Sidebar de Locais -->
+        <div class="map-showcase" data-animate="fade-up">
+          <div class="map-wrapper">
+            <div id="coverageMap" class="coverage-map"></div>
+            <div class="map-overlay-badge">
+              <span class="pulse-dot"></span>
+              Atendimento Ativo em Tempo Real
             </div>
-            <div class="regioes__tags">
-              <span>Moinhos de Vento</span>
-              <span>Bela Vista</span>
-              <span>Petrópolis</span>
-              <span>Menino Deus</span>
-              <span>Centro Histórico</span>
-              <span>Mont'Serrat</span>
-              <span>Auxiliadora</span>
-              <span>Passo d'Areia</span>
-              <span>Higienópolis</span>
-              <span>Três Figueiras</span>
-              <span>Zona Sul</span>
-              <span>Zona Norte</span>
-              <span>Zona Leste</span>
+            <button type="button" class="map-reset-btn" id="mapResetBtn" title="Redefinir visualização do mapa">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
+              Ver Todas
+            </button>
+          </div>
+
+          <div class="map-sidebar">
+            <div class="map-sidebar__header">
+              <h3>Locais de Atendimento</h3>
+              <span class="map-sidebar__counter" id="locationCount">20 locais</span>
+            </div>
+            <div class="map-search-wrap">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+              <input type="text" id="mapSearchInput" placeholder="Buscar bairro ou cidade..." aria-label="Buscar bairro ou cidade" />
+            </div>
+            <div class="map-locations-list" id="mapLocationsList">
+              <!-- Renderizado via JavaScript dinamicamente -->
             </div>
           </div>
-          <div class="regioes__card">
-            <div class="regioes__card-header">
-              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-              <h3>Região Metropolitana e Vale dos Sinos</h3>
+        </div>
+
+        <!-- Banner de Confiança / Prova Real -->
+        <div class="map-trust-bar" data-animate="fade-up">
+          <div class="map-trust-item">
+            <div class="map-trust-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
             </div>
-            <div class="regioes__tags">
-              <span>Canoas</span>
-              <span>Gravataí</span>
-              <span>Cachoeirinha</span>
-              <span>Esteio</span>
-              <span>Sapucaia do Sul</span>
-              <span>São Leopoldo</span>
-              <span>Novo Hamburgo</span>
-              <span>Viamão</span>
-              <span>Alvorada</span>
-              <span>Guaíba</span>
+            <div>
+              <strong>Equipes Locais Treinadas</strong>
+              <span>Profissionais uniformizados e distribuídos em rotas estratégicas.</span>
+            </div>
+          </div>
+          <div class="map-trust-item">
+            <div class="map-trust-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            </div>
+            <div>
+              <strong>Agilidade no Início do Serviço</strong>
+              <span>Visita técnica e início imediato de rotinas após aprovação da proposta.</span>
+            </div>
+          </div>
+          <div class="map-trust-item">
+            <div class="map-trust-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+            </div>
+            <div>
+              <strong>Contratos Residenciais e Empresariais</strong>
+              <span>Atendemos condomínios de todos os portes e empresas de diversos segmentos.</span>
             </div>
           </div>
         </div>
+
       </div>
     </section>
 
@@ -883,6 +921,7 @@
   </a>
 
   <div class="nav__overlay" id="navOverlay"></div>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script src="config.js"></script>
   <script src="main.js"></script>
 </body>

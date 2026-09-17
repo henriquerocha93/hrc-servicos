@@ -397,6 +397,229 @@
     });
   }
 
+  // ---- Interactive Coverage Map (Leaflet) ----
+  function initInteractiveMap() {
+    const mapContainer = document.getElementById('coverageMap');
+    if (!mapContainer || typeof L === 'undefined') return;
+
+    // Database of regions & neighborhoods
+    const LOCATIONS = [
+      // Porto Alegre Bairros
+      { id: 'moinhos', name: 'Moinhos de Vento', region: 'Porto Alegre', group: 'poa', lat: -30.0248, lng: -51.2014, desc: 'Condomínios residenciais de alto padrão e prédios comerciais.', services: 'Limpeza de Condomínios • Zeladoria • Vidros' },
+      { id: 'belavista', name: 'Bela Vista', region: 'Porto Alegre', group: 'poa', lat: -30.0366, lng: -51.1945, desc: 'Edifícios residenciais e condomínios com equipe dedicada.', services: 'Limpeza de Condomínios • Áreas Comuns • Zeladoria' },
+      { id: 'petropolis', name: 'Petrópolis', region: 'Porto Alegre', group: 'poa', lat: -30.0450, lng: -51.1830, desc: 'Rotas frequentes para condomínios e estabelecimentos comerciais.', services: 'Limpeza Empresarial • Zeladoria • Pós-Obra' },
+      { id: 'meninodeus', name: 'Menino Deus', region: 'Porto Alegre', group: 'poa', lat: -30.0535, lng: -51.2220, desc: 'Atendimento contínuo para clínicas, condomínios e escritórios.', services: 'Limpeza Empresarial • Condomínios • Zeladoria' },
+      { id: 'centro', name: 'Centro Histórico', region: 'Porto Alegre', group: 'poa', lat: -30.0326, lng: -51.2297, desc: 'Prédios comerciais, escritórios e condomínios tradicionais.', services: 'Limpeza Empresarial • Zeladoria • Vidros' },
+      { id: 'montserrat', name: "Mont'Serrat", region: 'Porto Alegre', group: 'poa', lat: -30.0289, lng: -51.1930, desc: 'Rotas estruturadas para condomínios residenciais e comerciais.', services: 'Limpeza de Condomínios • Zeladoria' },
+      { id: 'auxiliadora', name: 'Auxiliadora', region: 'Porto Alegre', group: 'poa', lat: -30.0205, lng: -51.1920, desc: 'Equipes uniformizadas para edifícios e lojas da região.', services: 'Limpeza Empresarial • Áreas Comuns • Zeladoria' },
+      { id: 'passodareia', name: "Passo d'Areia", region: 'Porto Alegre', group: 'poa', lat: -30.0150, lng: -51.1760, desc: 'Atendimento em condomínios e centros comerciais da Zona Norte.', services: 'Limpeza de Condomínios • Empresarial' },
+      { id: 'higienopolis', name: 'Higienópolis', region: 'Porto Alegre', group: 'poa', lat: -30.0185, lng: -51.1850, desc: 'Serviços especializados para condomínios e consultórios.', services: 'Limpeza de Condomínios • Zeladoria • Vidros' },
+      { id: 'tresfigueiras', name: 'Três Figueiras', region: 'Porto Alegre', group: 'poa', lat: -30.0380, lng: -51.1680, desc: 'Condomínios residenciais e empresas de grande porte.', services: 'Limpeza de Condomínios • Zeladoria • Pós-Obra' },
+      { id: 'zonasul', name: 'Zona Sul (Tristeza / Ipanema)', region: 'Porto Alegre', group: 'poa', lat: -30.1200, lng: -51.2400, desc: 'Condomínios horizontais, verticais e estabelecimentos comerciais.', services: 'Limpeza de Condomínios • Zeladoria' },
+      { id: 'zonanorte', name: 'Zona Norte (São Geraldo / Sarandi)', region: 'Porto Alegre', group: 'poa', lat: -29.9980, lng: -51.1600, desc: 'Empresas, galpões, indústrias e condomínios.', services: 'Limpeza Empresarial • Pós-Obra • Zeladoria' },
+      { id: 'zonaleste', name: 'Zona Leste (Partenon / Jardim Botânico)', region: 'Porto Alegre', group: 'poa', lat: -30.0580, lng: -51.1750, desc: 'Edifícios residenciais e centros comerciais.', services: 'Limpeza de Condomínios • Zeladoria' },
+
+      // Região Metropolitana & Vale dos Sinos
+      { id: 'canoas', name: 'Canoas', region: 'Região Metropolitana', group: 'metro', lat: -29.9180, lng: -51.1790, desc: 'Cobertura integral para condomínios, centros logísticos e empresas.', services: 'Limpeza Empresarial • Condomínios • Zeladoria' },
+      { id: 'gravatai', name: 'Gravataí', region: 'Região Metropolitana', group: 'metro', lat: -29.9430, lng: -50.9920, desc: 'Atendimento corporativo e residencial com cronograma fixo.', services: 'Limpeza Empresarial • Zeladoria • Pós-Obra' },
+      { id: 'cachoeirinha', name: 'Cachoeirinha', region: 'Região Metropolitana', group: 'metro', lat: -29.9510, lng: -51.0930, desc: 'Rotinas completas de limpeza para comércio e condomínios.', services: 'Limpeza de Condomínios • Empresarial' },
+      { id: 'esteio', name: 'Esteio', region: 'Região Metropolitana', group: 'metro', lat: -29.8580, lng: -51.1810, desc: 'Equipes preparadas para condomínios e estabelecimentos.', services: 'Limpeza de Condomínios • Zeladoria' },
+      { id: 'sapucaia', name: 'Sapucaia do Sul', region: 'Região Metropolitana', group: 'metro', lat: -29.8320, lng: -51.1460, desc: 'Serviços de conservação predial e zeladoria.', services: 'Limpeza e Conservação • Zeladoria' },
+      { id: 'saoleopoldo', name: 'São Leopoldo', region: 'Vale dos Sinos', group: 'metro', lat: -29.7580, lng: -51.1480, desc: 'Atendimento a empresas do polo tecnológico e condomínios.', services: 'Limpeza Empresarial • Condomínios • Vidros' },
+      { id: 'novohamburgo', name: 'Novo Hamburgo', region: 'Vale dos Sinos', group: 'metro', lat: -29.6880, lng: -51.1310, desc: 'Prestação de serviços para edifícios, escritórios e fábricas.', services: 'Limpeza Empresarial • Zeladoria • Pós-Obra' },
+      { id: 'viamao', name: 'Viamão', region: 'Região Metropolitana', group: 'metro', lat: -30.0810, lng: -51.0230, desc: 'Condomínios fechados, residenciais e comércio.', services: 'Limpeza de Condomínios • Zeladoria' },
+      { id: 'alvorada', name: 'Alvorada', region: 'Região Metropolitana', group: 'metro', lat: -30.0020, lng: -51.0820, desc: 'Empresas e estabelecimentos comerciais da região.', services: 'Limpeza Comercial • Pós-Obra' },
+      { id: 'guaiba', name: 'Guaíba', region: 'Região Metropolitana', group: 'metro', lat: -30.1140, lng: -51.3250, desc: 'Atendimento industrial e condomínios na margem do Guaíba.', services: 'Limpeza Empresarial • Zeladoria' }
+    ];
+
+    // Initialize Leaflet Map centered on Porto Alegre
+    const map = L.map('coverageMap', {
+      center: [-29.98, -51.16],
+      zoom: 11,
+      scrollWheelZoom: false,
+      zoomControl: true
+    });
+
+    // Clean, modern map tiles (CartoDB Voyager)
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; <a href="https://carto.com/" target="_blank">CARTO</a>, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      maxZoom: 19,
+      subdomains: 'abcd'
+    }).addTo(map);
+
+    // Custom Map Pin DivIcon
+    const pinIcon = L.divIcon({
+      className: 'custom-map-pin',
+      html: '<div class="custom-map-pin__inner"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"></path><circle cx="12" cy="10" r="3"></circle></svg></div>',
+      iconSize: [32, 32],
+      iconAnchor: [16, 32],
+      popupAnchor: [0, -32]
+    });
+
+    // Create markers and map them
+    const markersMap = new Map();
+    const markersGroup = L.featureGroup().addTo(map);
+
+    function createPopupContent(loc) {
+      return `
+        <div class="map-popup-card">
+          <div class="map-popup-card__header">
+            <h4 class="map-popup-card__title">${loc.name}</h4>
+            <span class="map-popup-card__badge">Ativo ✅</span>
+          </div>
+          <p class="map-popup-card__desc">${loc.desc}</p>
+          <div class="map-popup-card__services">
+            <strong>Serviços Disponíveis:</strong>
+            ${loc.services}
+          </div>
+          <button type="button" class="map-popup-card__btn" onclick="selectRegionForQuote('${loc.name}')">
+            Solicitar Orçamento nesta Região
+          </button>
+        </div>
+      `;
+    }
+
+    LOCATIONS.forEach(loc => {
+      const marker = L.marker([loc.lat, loc.lng], { icon: pinIcon });
+      marker.bindPopup(createPopupContent(loc), { maxWidth: 300 });
+      marker.addTo(markersGroup);
+      markersMap.set(loc.id, { marker, data: loc });
+    });
+
+    // Render list items in sidebar
+    const listEl = document.getElementById('mapLocationsList');
+    const countEl = document.getElementById('locationCount');
+    let currentFilter = 'all';
+    let searchQuery = '';
+
+    function renderList() {
+      if (!listEl) return;
+      listEl.innerHTML = '';
+
+      const filtered = LOCATIONS.filter(loc => {
+        const matchesFilter = (currentFilter === 'all') || (loc.group === currentFilter);
+        const matchesSearch = !searchQuery || loc.name.toLowerCase().includes(searchQuery) || loc.region.toLowerCase().includes(searchQuery);
+        return matchesFilter && matchesSearch;
+      });
+
+      if (countEl) {
+        countEl.textContent = `${filtered.length} local${filtered.length === 1 ? '' : 'is'}`;
+      }
+
+      if (filtered.length === 0) {
+        listEl.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--gray-500); font-size: 13px;">Nenhum local encontrado para a busca.</div>';
+        return;
+      }
+
+      filtered.forEach(loc => {
+        const item = document.createElement('div');
+        item.className = 'map-loc-item';
+        item.dataset.id = loc.id;
+        item.innerHTML = `
+          <div class="map-loc-item__left">
+            <div class="map-loc-item__icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+            </div>
+            <div>
+              <strong class="map-loc-item__name">${loc.name}</strong>
+              <span class="map-loc-item__sub">${loc.region}</span>
+            </div>
+          </div>
+          <span class="map-loc-item__tag">Ativo</span>
+        `;
+
+        item.addEventListener('click', () => {
+          document.querySelectorAll('.map-loc-item').forEach(el => el.classList.remove('selected'));
+          item.classList.add('selected');
+
+          const entry = markersMap.get(loc.id);
+          if (entry) {
+            map.flyTo([loc.lat, loc.lng], 14, { duration: 1 });
+            setTimeout(() => entry.marker.openPopup(), 600);
+          }
+        });
+
+        listEl.appendChild(item);
+      });
+    }
+
+    renderList();
+
+    // Filter Buttons logic
+    document.querySelectorAll('.map-filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.map-filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentFilter = btn.dataset.filter || 'all';
+
+        // Update markers visibility
+        const visibleMarkers = [];
+        LOCATIONS.forEach(loc => {
+          const entry = markersMap.get(loc.id);
+          if (!entry) return;
+          const isVisible = (currentFilter === 'all') || (loc.group === currentFilter);
+          if (isVisible) {
+            if (!map.hasLayer(entry.marker)) map.addLayer(entry.marker);
+            visibleMarkers.push(entry.marker);
+          } else {
+            if (map.hasLayer(entry.marker)) map.removeLayer(entry.marker);
+          }
+        });
+
+        renderList();
+
+        if (visibleMarkers.length > 0) {
+          const group = L.featureGroup(visibleMarkers);
+          map.fitBounds(group.getBounds().pad(0.12), { animate: true, duration: 1 });
+        }
+      });
+    });
+
+    // Live search input
+    const searchInput = document.getElementById('mapSearchInput');
+    if (searchInput) {
+      searchInput.addEventListener('input', (e) => {
+        searchQuery = (e.target.value || '').trim().toLowerCase();
+        renderList();
+      });
+    }
+
+    // Reset Map View button
+    const resetBtn = document.getElementById('mapResetBtn');
+    if (resetBtn) {
+      resetBtn.addEventListener('click', () => {
+        map.fitBounds(markersGroup.getBounds().pad(0.1), { animate: true, duration: 1 });
+      });
+    }
+
+    // Initial fit bounds
+    setTimeout(() => {
+      map.invalidateSize();
+      map.fitBounds(markersGroup.getBounds().pad(0.08));
+    }, 400);
+
+    // Global helper for popup CTA button
+    window.selectRegionForQuote = function(regionName) {
+      const form = document.getElementById('orcamentoForm');
+      const orcSection = document.getElementById('orcamento');
+      if (orcSection) {
+        const offset = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--nav-h'), 10) || 76;
+        const top = orcSection.getBoundingClientRect().top + window.pageYOffset - offset;
+        window.scrollTo({ top, behavior: 'smooth' });
+      }
+
+      if (form) {
+        const cidadeInput = form.querySelector('#cidade');
+        if (cidadeInput && (!cidadeInput.value || cidadeInput.value === 'Sua cidade')) {
+          cidadeInput.value = regionName;
+          cidadeInput.classList.remove('error');
+        }
+        const nomeInput = form.querySelector('#nome');
+        if (nomeInput) nomeInput.focus();
+      }
+    };
+  }
+
   // ---- Init ----
   function init() {
     populateConfig();
@@ -404,6 +627,7 @@
     initMobileMenu();
     initAnimations();
     initActiveNav();
+    initInteractiveMap();
     initFaq();
     initForm();
     initSmoothScroll();
