@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://henriquerocha93.github.io/hrc-servicos/sitemap.xml
