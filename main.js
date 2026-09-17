@@ -619,6 +619,251 @@
     };
   }
 
+  // ---- 24H Virtual Assistant Chatbot ----
+  function initChatbot() {
+    const toggleBtn  = document.getElementById('chatbotToggleBtn');
+    const chatWindow = document.getElementById('chatbotWindow');
+    const closeBtn   = document.getElementById('chatbotCloseBtn');
+    const form       = document.getElementById('chatbotForm');
+    const input      = document.getElementById('chatbotInput');
+    const body       = document.getElementById('chatbotBody');
+    const typing     = document.getElementById('chatTyping');
+    const badge      = document.getElementById('chatbotUnreadBadge');
+    const botIcon    = toggleBtn?.querySelector('.chatbot-icon-bot');
+    const closeIcon  = toggleBtn?.querySelector('.chatbot-icon-close');
+
+    if (!toggleBtn || !chatWindow || !form || !body) return;
+
+    let isOpen = false;
+
+    function openChat() {
+      isOpen = true;
+      chatWindow.style.display = 'flex';
+      if (badge) badge.style.display = 'none';
+      if (botIcon) botIcon.style.display = 'none';
+      if (closeIcon) closeIcon.style.display = 'block';
+      setTimeout(() => {
+        if (input) input.focus();
+        body.scrollTop = body.scrollHeight;
+      }, 100);
+    }
+
+    function closeChat() {
+      isOpen = false;
+      chatWindow.style.display = 'none';
+      if (botIcon) botIcon.style.display = 'block';
+      if (closeIcon) closeIcon.style.display = 'none';
+    }
+
+    toggleBtn.addEventListener('click', () => {
+      isOpen ? closeChat() : openChat();
+    });
+
+    if (closeBtn) {
+      closeBtn.addEventListener('click', closeChat);
+    }
+
+    function appendUserMessage(text) {
+      const timeStr = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+      const msgDiv = document.createElement('div');
+      msgDiv.className = 'chat-msg chat-msg--user';
+      msgDiv.innerHTML = `
+        <div class="chat-msg__bubble">
+          <p>${escapeHtml(text)}</p>
+        </div>
+        <span class="chat-msg__time">${timeStr}</span>
+      `;
+      body.appendChild(msgDiv);
+      body.scrollTop = body.scrollHeight;
+    }
+
+    function appendBotMessage(htmlContent) {
+      const timeStr = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+      const msgDiv = document.createElement('div');
+      msgDiv.className = 'chat-msg chat-msg--bot';
+      msgDiv.innerHTML = `
+        <div class="chat-msg__bubble">
+          ${htmlContent}
+        </div>
+        <span class="chat-msg__time">${timeStr}</span>
+      `;
+      body.appendChild(msgDiv);
+      body.scrollTop = body.scrollHeight;
+    }
+
+    function escapeHtml(str) {
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    // Knowledge Base response generator
+    function getBotResponse(query) {
+      const q = query.toLowerCase().trim();
+      const waUrl = getWhatsAppUrl();
+
+      // Intent: Orçamento / Preço / Valor / Custo
+      if (q.includes('orçamento') || q.includes('orcamento') || q.includes('preço') || q.includes('preco') || q.includes('valor') || q.includes('custo') || q.includes('quanto custa')) {
+        return `
+          <p>Para fornecer o <strong>melhor valor personalizado</strong> para o seu espaço, avaliamos o tamanho do local e a frequência desejada.</p>
+          <p>Você pode solicitar um orçamento gratuito em poucos segundos diretamente pelo site:</p>
+          <button type="button" class="chat-action-btn" onclick="scrollToSection('#orcamento');">
+            📝 Preencher Formulário de Orçamento
+          </button>
+          ${waUrl !== '#' ? `
+          <a href="${waUrl}" target="_blank" rel="noopener" class="chat-action-btn chat-action-btn--wa" style="display:inline-flex; text-decoration:none;">
+            💬 Chamar no WhatsApp
+          </a>` : ''}
+        `;
+      }
+
+      // Intent: Condomínio / Síndico / Prédio
+      if (q.includes('condominio') || q.includes('condomínio') || q.includes('sindico') || q.includes('síndico') || q.includes('predio') || q.includes('prédio') || q.includes('residencial')) {
+        return `
+          <p>🏢 <strong>Soluções para Condomínios:</strong></p>
+          <p>Atendemos condomínios residenciais e comerciais com:</p>
+          <ul>
+            <li>Limpeza diária ou periódica de halls, escadas, elevadores e áreas de lazer;</li>
+            <li>Zeladoria profissional e pequenas rotinas prediais;</li>
+            <li>Equipe uniformizada e substituição rápida em caso de falta.</li>
+          </ul>
+          <button type="button" class="chat-action-btn" onclick="scrollToSection('#condominios');">
+            Ver Proposta para Condomínios
+          </button>
+        `;
+      }
+
+      // Intent: Empresas / Escritórios / Lojas / Clínicas
+      if (q.includes('empresa') || q.includes('escritorio') || q.includes('escritório') || q.includes('loja') || q.includes('clinica') || q.includes('clínica') || q.includes('comercial')) {
+        return `
+          <p>💼 <strong>Limpeza Empresarial e Comercial:</strong></p>
+          <p>Garantimos um ambiente higienizado e apresentável para seus clientes e colaboradores. Trabalhamos com horários flexíveis (inclusive noturnos ou finais de semana) para não atrapalhar seu expediente.</p>
+          <button type="button" class="chat-action-btn" onclick="scrollToSection('#empresas');">
+            Conhecer Soluções Empresariais
+          </button>
+        `;
+      }
+
+      // Intent: Zeladoria
+      if (q.includes('zelador') || q.includes('zeladoria')) {
+        return `
+          <p>🛡️ <strong>Serviço de Zeladoria:</strong></p>
+          <p>Nossos zeladores são responsáveis por acompanhar o funcionamento geral do condomínio, fiscalizar o uso das áreas comuns, prestar pequenos suportes do dia a dia e receber prestadores de serviço com responsabilidade.</p>
+          <button type="button" class="chat-action-btn" onclick="scrollToSection('#orcamento');">
+            Solicitar Proposta com Zeladoria
+          </button>
+        `;
+      }
+
+      // Intent: Regiões / Bairros / Cidades / Onde Atendem
+      if (q.includes('regiao') || q.includes('região') || q.includes('bairro') || q.includes('cidade') || q.includes('porto alegre') || q.includes('canoas') || q.includes('vale') || q.includes('onde')) {
+        return `
+          <p>📍 <strong>Área de Cobertura:</strong></p>
+          <p>Atendemos <strong>todos os bairros de Porto Alegre</strong> (Moinhos de Vento, Bela Vista, Petrópolis, Menino Deus, Centro, Zona Sul, Zona Norte, etc.) e cidades da Região Metropolitana (Canoas, Gravataí, Cachoeirinha, São Leopoldo, Novo Hamburgo, Viamão, Esteio, etc.).</p>
+          <button type="button" class="chat-action-btn" onclick="scrollToSection('#regioes');">
+            🗺️ Ver no Mapa Interativo
+          </button>
+        `;
+      }
+
+      // Intent: Serviços gerais
+      if (q.includes('servico') || q.includes('serviço') || q.includes('vidro') || q.includes('pos-obra') || q.includes('pós obra') || q.includes('obra')) {
+        return `
+          <p>🧹 <strong>Nossos Principais Serviços:</strong></p>
+          <ul>
+            <li>Limpeza de Condomínios e Áreas Comuns</li>
+            <li>Zeladoria Profissional</li>
+            <li>Limpeza Empresarial & Escritórios</li>
+            <li>Limpeza de Vidros e Fachadas Internas</li>
+            <li>Limpeza Pós-Obra e Reformas</li>
+          </ul>
+          <button type="button" class="chat-action-btn" onclick="scrollToSection('#servicos');">
+            Ver Todos os Serviços
+          </button>
+        `;
+      }
+
+      // Intent: WhatsApp / Humano / Falar
+      if (q.includes('whatsapp') || q.includes('whats') || q.includes('telefone') || q.includes('humano') || q.includes('falar') || q.includes('contato')) {
+        return `
+          <p>📲 Você pode conversar diretamente com nossa equipe de atendimento humano pelo WhatsApp agora mesmo!</p>
+          ${waUrl !== '#' ? `
+          <a href="${waUrl}" target="_blank" rel="noopener" class="chat-action-btn chat-action-btn--wa" style="display:inline-flex; text-decoration:none;">
+            💬 Abrir WhatsApp da HRC
+          </a>` : '<p>Nosso WhatsApp estará disponível em instantes.</p>'}
+        `;
+      }
+
+      // Intent: Como Contratar / Horários / 24h
+      if (q.includes('contratar') || q.includes('como funciona') || q.includes('contrato') || q.includes('horario') || q.includes('24h')) {
+        return `
+          <p>⚙️ <strong>Como funciona a contratação:</strong></p>
+          <ol style="padding-left:18px; margin:6px 0;">
+            <li>1. Você solicita seu orçamento pelo site ou WhatsApp.</li>
+            <li>2. Entendemos a metragem e rotinas necessárias.</li>
+            <li>3. Apresentamos a proposta personalizada.</li>
+            <li>4. Iniciamos o atendimento com equipe uniformizada e treinada!</li>
+          </ol>
+          <button type="button" class="chat-action-btn" onclick="scrollToSection('#orcamento');">
+            Solicitar Proposta Agora
+          </button>
+        `;
+      }
+
+      // Fallback response
+      return `
+        <p>Entendi! Para essa dúvida específica ou para um orçamento sob medida para sua necessidade, nosso time está pronto para te atender:</p>
+        <button type="button" class="chat-action-btn" onclick="scrollToSection('#orcamento');">
+          📝 Solicitar Orçamento no Site
+        </button>
+        ${waUrl !== '#' ? `
+        <a href="${waUrl}" target="_blank" rel="noopener" class="chat-action-btn chat-action-btn--wa" style="display:inline-flex; text-decoration:none;">
+          💬 Chamar no WhatsApp
+        </a>` : ''}
+      `;
+    }
+
+    function processUserInput(text) {
+      if (!text || !text.trim()) return;
+      appendUserMessage(text.trim());
+      if (input) input.value = '';
+
+      if (typing) typing.style.display = 'flex';
+      body.scrollTop = body.scrollHeight;
+
+      setTimeout(() => {
+        if (typing) typing.style.display = 'none';
+        const botReply = getBotResponse(text);
+        appendBotMessage(botReply);
+      }, 650);
+    }
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const val = (input?.value || '').trim();
+      if (val) processUserInput(val);
+    });
+
+    // Quick Action Chips listener
+    body.addEventListener('click', (e) => {
+      const chip = e.target.closest('.chat-chip');
+      if (chip) {
+        const query = chip.dataset.query || chip.textContent;
+        processUserInput(chip.textContent.replace(/[^\w\sÀ-ÿ]/g, '').trim());
+      }
+    });
+
+    // Helper to scroll smoothly to section from inside chat
+    window.scrollToSection = function(selector) {
+      const target = document.querySelector(selector);
+      if (target) {
+        const offset = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--nav-h'), 10) || 76;
+        const top = target.getBoundingClientRect().top + window.pageYOffset - offset;
+        window.scrollTo({ top, behavior: 'smooth' });
+      }
+    };
+  }
+
   // ---- Init ----
   function init() {
     populateConfig();
@@ -627,6 +872,7 @@
     initAnimations();
     initActiveNav();
     initInteractiveMap();
+    initChatbot();
     initFaq();
     initForm();
     initSmoothScroll();
