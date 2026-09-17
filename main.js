@@ -619,7 +619,7 @@
     };
   }
 
-  // ---- ATENDIMENTO VIRTUAL 24H (CONSULTORA MARIANA HRC) ----
+  // ---- ATENDIMENTO VIRTUAL HUMANIZADO 24H (CONSULTORA MARIANA HRC) ----
   function initChatbot() {
     const toggleBtn  = document.getElementById('chatbotToggleBtn');
     const chatWindow = document.getElementById('chatbotWindow');
@@ -636,6 +636,14 @@
     if (!toggleBtn || !chatWindow || !form || !body) return;
 
     let isOpen = false;
+
+    // Estado da Conversa Humanizada
+    const chatState = {
+      userName: null,
+      askedName: true,
+      lastTopic: null,
+      turnCount: 0
+    };
 
     function openChat() {
       isOpen = true;
@@ -705,33 +713,88 @@
       return div.innerHTML;
     }
 
-    // Knowledge Base Consultiva e Humanizada
-    function getBotResponse(query) {
-      const q = query.toLowerCase().trim();
-      const waUrl = getWhatsAppUrl();
+    // Extrator Inteligente de Nome
+    function extractName(text) {
+      const clean = text.trim();
+      const blacklist = [
+        'oi', 'ola', 'olá', 'opa', 'hey', 'orcamento', 'orçamento', 'preco', 'preço', 'valor',
+        'limpeza', 'condominio', 'condomínio', 'empresa', 'zelador', 'zeladoria', 'vidro',
+        'obra', 'sim', 'nao', 'não', 'bom', 'boa', 'dia', 'tarde', 'noite', 'quero', 'tudo',
+        'bem', 'ajuda', 'contato', 'whatsapp', 'whats', 'obrigado', 'obrigada', 'valeu', 'quanto',
+        'gostaria', 'preciso', 'favor', 'como', 'funciona', 'onde', 'atende', 'solicitar'
+      ];
 
-      // Intent: Saudações / Cumprimentos (oi, olá, bom dia, boa tarde, etc.)
-      if (/^(oi|ola|olá|opa|hey|bom dia|boa tarde|boa noite|tudo bem|tudo bom|salve)/i.test(q)) {
-        return `
-          <p>Olá! Tudo bem com você? 😊</p>
-          <p>Sou a <strong>Mariana</strong>, especialista de atendimento da <strong>HRC Serviços</strong>. Como posso te auxiliar hoje?</p>
-          <p>Se quiser, você pode escolher uma das opções abaixo ou me dizer qual serviço você precisa:</p>
-          <div style="display:flex; flex-direction:column; gap:6px; margin-top:8px;">
-            <button type="button" class="chat-action-btn" onclick="scrollToSection('#orcamento');">
-              📝 Solicitar Orçamento Rápido
-            </button>
-            <button type="button" class="chat-action-btn" onclick="scrollToSection('#servicos');" style="background:var(--blue-mid);">
-              🧹 Conhecer Nossos Serviços
-            </button>
-          </div>
-        `;
+      // Regex para frases como "meu nome é fulano", "me chamo fulano", "sou o fulano"
+      const phrasePatterns = [
+        /(?:meu nome [eé]|me chamo|pode me chamar de|sou [oa]|aqui [eé] [oa]|chamo-me)\s+([a-zA-ZÀ-ÿ]{2,20})/i,
+        /^sou\s+([a-zA-ZÀ-ÿ]{2,20})/i
+      ];
+
+      for (const pat of phrasePatterns) {
+        const m = clean.match(pat);
+        if (m && m[1]) {
+          const cand = m[1].trim().toLowerCase();
+          if (!blacklist.includes(cand)) {
+            return m[1].charAt(0).toUpperCase() + m[1].slice(1).toLowerCase();
+          }
+        }
       }
 
-      // Intent: Agradecimentos e despedidas (obrigado, valeu, show, perfeito, tchau)
-      if (q.includes('obrigad') || q.includes('valeu') || q.includes('show') || q.includes('perfeito') || q.includes('excelente') || q.includes('ótimo') || q.includes('otimo') || q.includes('tchau') || q.includes('ate logo')) {
+      // Se foi digitado apenas 1 ou 2 palavras (ex: "Henrique" ou "Henrique Rocha")
+      const words = clean.split(/\s+/).map(w => w.replace(/[^\wÀ-ÿ]/g, ''));
+      if (words.length >= 1 && words.length <= 3) {
+        const first = words[0].toLowerCase();
+        if (!blacklist.includes(first) && first.length >= 2 && !/[0-9]/.test(first)) {
+          return words[0].charAt(0).toUpperCase() + words[0].slice(1).toLowerCase();
+        }
+      }
+
+      return null;
+    }
+
+    // Gerador de Resposta Humanizada e Conversacional
+    function getBotResponse(rawText) {
+      const text = rawText.trim();
+      const q = text.toLowerCase();
+      const waUrl = getWhatsAppUrl();
+      chatState.turnCount++;
+
+      // 1. Verificar se o usuário informou o nome
+      if (!chatState.userName) {
+        const detectedName = extractName(text);
+        if (detectedName) {
+          chatState.userName = detectedName;
+          if (input) input.placeholder = `Digite sua mensagem, ${detectedName}...`;
+
+          return `
+            <p>Muito prazer em te conhecer, <strong>${detectedName}</strong>! É uma satisfação falar com você! 🤝</p>
+            <p>Me conte um pouquinho: você procura soluções de limpeza para <strong>seu condomínio</strong>, <strong>sua empresa ou escritório</strong>, <strong>uma limpeza pós-obra</strong> ou gostaria de tirar alguma dúvida específica?</p>
+            <div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:10px;">
+              <button type="button" class="chat-chip" data-query="condominios">🏢 Meu Condomínio</button>
+              <button type="button" class="chat-chip" data-query="empresas">💼 Minha Empresa</button>
+              <button type="button" class="chat-chip" data-query="zeladoria">🛡️ Zeladoria</button>
+              <button type="button" class="chat-chip" data-query="pos-obra">🔨 Pós-Obra</button>
+              <button type="button" class="chat-chip" data-query="orcamento">📝 Fazer Orçamento</button>
+              <button type="button" class="chat-chip" data-query="whatsapp">💬 Falar no WhatsApp</button>
+            </div>
+          `;
+        }
+      }
+
+      // Montar saudação personalizada com o nome (se já soubermos)
+      const uName = chatState.userName ? `, <strong>${chatState.userName}</strong>` : '';
+      const askNameReminder = !chatState.userName ? `
+        <p style="margin-top:10px; font-size:12.5px; color:var(--blue-dark); background:#eff6ff; padding:8px 12px; border-radius:10px; border-left:3px solid var(--blue);">
+          💬 <em>Aliás, ainda não me disse o seu nome... Como posso te chamar para te atender com mais carinho?</em>
+        </p>
+      ` : '';
+
+      // 2. Intent: Agradecimentos / Despedidas
+      if (q.includes('obrigad') || q.includes('valeu') || q.includes('show') || q.includes('perfeito') || q.includes('excelente') || q.includes('ótimo') || q.includes('otimo') || q.includes('tchau') || q.includes('ate logo') || q.includes('abraço')) {
         return `
-          <p>Por nada! Fico muito feliz em poder ajudar! ✨</p>
-          <p>Se precisar de qualquer outra informação ou quiser agendar uma visita sem compromisso, conte sempre com a equipe da <strong>HRC Serviços</strong>. Tenha um excelente dia!</p>
+          <p>Por nada${uName}! Fico imensamente feliz em ajudar! ✨</p>
+          <p>Se você quiser agendar uma visita técnica sem compromisso ou receber uma proposta detalhada, nós estamos sempre por aqui.</p>
+          <p>Tenha um dia maravilhoso!</p>
           ${waUrl !== '#' ? `
           <a href="${waUrl}" target="_blank" rel="noopener" class="chat-action-btn chat-action-btn--wa" style="display:inline-flex; text-decoration:none;">
             💬 Salvar nosso WhatsApp
@@ -739,161 +802,195 @@
         `;
       }
 
-      // Intent: Orçamento / Preço / Valor / Custo / Quanto custa
-      if (q.includes('orçamento') || q.includes('orcamento') || q.includes('preço') || q.includes('preco') || q.includes('valor') || q.includes('custo') || q.includes('quanto') || q.includes('tabela')) {
-        return `
-          <p>Com certeza! Para oferecermos o <strong>melhor custo-benefício</strong> para a sua realidade, nós avaliamos detalhes simples como:</p>
-          <ul>
-            <li>Tamanho e características do local (metragem aproximada);</li>
-            <li>Frequência desejada (diária, semanal, quinzenal ou pontual);</li>
-            <li>Tipo de serviço (condomínio, empresarial, zeladoria, vidros ou pós-obra).</li>
-          </ul>
-          <p>Você pode solicitar uma proposta personalizada em menos de 1 minuto diretamente por aqui ou falar comigo no WhatsApp:</p>
-          <button type="button" class="chat-action-btn" onclick="scrollToSection('#orcamento');">
-            📝 Preencher Formulário de Orçamento
-          </button>
-          ${waUrl !== '#' ? `
-          <a href="${waUrl}" target="_blank" rel="noopener" class="chat-action-btn chat-action-btn--wa" style="display:inline-flex; text-decoration:none; margin-left:6px;">
-            💬 Chamar no WhatsApp
-          </a>` : ''}
-        `;
+      // 3. Intent: Cumprimentos / Saudações isoladas ("oi", "tudo bem", etc.)
+      if (/^(oi|ola|olá|opa|hey|bom dia|boa tarde|boa noite|tudo bem|tudo bom|salve)/i.test(q) && q.length < 25) {
+        if (chatState.userName) {
+          return `
+            <p>Olá${uName}! Tudo ótimo por aqui! 😊</p>
+            <p>Em que posso te ajudar hoje? Deseja uma proposta para <strong>condomínio</strong>, <strong>empresa</strong>, <strong>zeladoria</strong> ou <strong>pós-obra</strong>?</p>
+          `;
+        }
       }
 
-      // Intent: Condomínio / Síndico / Prédio / Áreas Comuns
+      // 4. Intent: Condomínios / Prédios / Síndicos
       if (q.includes('condominio') || q.includes('condomínio') || q.includes('sindico') || q.includes('síndico') || q.includes('predio') || q.includes('prédio') || q.includes('residencial') || q.includes('portaria')) {
+        chatState.lastTopic = 'condominio';
         return `
-          <p>🏢 <strong>Atendimento Especializado para Condomínios:</strong></p>
-          <p>Trabalhamos lado a lado com síndicos e administradoras para manter o condomínio limpo, organizado e com alta valorização patrimonial:</p>
-          <ul>
-            <li><strong>Limpeza completa:</strong> halls de entrada, escadarias, elevadores, salão de festas, garagens e áreas de lazer;</li>
-            <li><strong>Zeladoria profissional:</strong> acompanhamento predial, rotinas de inspeção e pequenos reparos;</li>
-            <li><strong>Tranquilidade total:</strong> funcionários uniformizados, treinados e substituição imediata em caso de faltas ou férias.</li>
-          </ul>
-          <button type="button" class="chat-action-btn" onclick="scrollToSection('#condominios');">
-            Ver Proposta para Condomínios
-          </button>
+          <p>Excelente escolha${uName}! Nós somos especialistas em terceirização para condomínios residenciais e comerciais em Porto Alegre e Região Metropolitana. 🏢</p>
+          <p>Cuidamos de tudo: <strong>halls de entrada, escadas, elevadores, garagens, salão de festas e áreas de lazer</strong> com rotinas organizadas.</p>
+          <p>O maior benefício para o síndico é a <strong>tranquilidade total</strong>: nossa equipe é 100% registrada e uniformizada, e em caso de falta ou férias, nós garantimos a <strong>reposição imediata</strong> do colaborador sem custos adicionais!</p>
+          <p>O seu condomínio é residencial ou comercial? Em qual bairro ou cidade ele fica?</p>
+          <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;">
+            <button type="button" class="chat-action-btn" onclick="scrollToSection('#condominios');">
+              📄 Conhecer Proposta para Condomínios
+            </button>
+            ${waUrl !== '#' ? `
+            <a href="${waUrl}" target="_blank" rel="noopener" class="chat-action-btn chat-action-btn--wa" style="display:inline-flex; text-decoration:none;">
+              💬 Falar com Especialista no WhatsApp
+            </a>` : ''}
+          </div>
+          ${askNameReminder}
         `;
       }
 
-      // Intent: Empresas / Escritórios / Lojas / Clínicas / Salas Comerciais
-      if (q.includes('empresa') || q.includes('escritorio') || q.includes('escritório') || q.includes('loja') || q.includes('clinica') || q.includes('clínica') || q.includes('comercial') || q.includes('corporativ')) {
+      // 5. Intent: Empresas / Escritórios / Lojas / Clínicas
+      if (q.includes('empresa') || q.includes('escritorio') || q.includes('escritório') || q.includes('loja') || q.includes('clinica') || q.includes('clínica') || q.includes('comercial') || q.includes('corporativ') || q.includes('sala')) {
+        chatState.lastTopic = 'empresa';
         return `
-          <p>💼 <strong>Limpeza Empresarial e Comercial:</strong></p>
-          <p>Criamos um ambiente de trabalho higienizado, saudável e impecável para receber seus clientes e motivar sua equipe:</p>
-          <ul>
-            <li>Atendimento em escritórios, clínicas médicas/odontológicas, lojas, agências e consultórios;</li>
-            <li><strong>Horários flexíveis:</strong> turnos matutinos, vespertinos, noturnos ou finais de semana para não atrapalhar seu expediente;</li>
-            <li>Produtos e equipamentos profissionais de alta performance.</li>
-          </ul>
-          <button type="button" class="chat-action-btn" onclick="scrollToSection('#empresas');">
-            Conhecer Soluções Empresariais
-          </button>
+          <p>Com certeza${uName}! Para empresas e clínicas, sabemos o quanto a primeira impressão e a higienização impecável impactam clientes e colaboradores. 💼</p>
+          <p>Nós trabalhamos com <strong>horários totalmente flexíveis</strong> (matutino, noturno ou finais de semana) para manter tudo limpo e organizado sem interromper o expediente de trabalho de vocês.</p>
+          <p>Qual é o tipo do seu negócio e com que frequência você gostaria da equipe (diária, dias alternados ou semanal)?</p>
+          <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;">
+            <button type="button" class="chat-action-btn" onclick="scrollToSection('#empresas');">
+              🏢 Ver Soluções para Empresas
+            </button>
+            ${waUrl !== '#' ? `
+            <a href="${waUrl}" target="_blank" rel="noopener" class="chat-action-btn chat-action-btn--wa" style="display:inline-flex; text-decoration:none;">
+              💬 Solicitar no WhatsApp
+            </a>` : ''}
+          </div>
+          ${askNameReminder}
         `;
       }
 
-      // Intent: Zeladoria / Zelador
+      // 6. Intent: Zeladoria / Zelador
       if (q.includes('zelador') || q.includes('zeladoria')) {
+        chatState.lastTopic = 'zeladoria';
         return `
-          <p>🛡️ <strong>Serviço de Zeladoria HRC:</strong></p>
-          <p>Nosso zelador atua como o braço direito do síndico na gestão e manutenção diária do imóvel:</p>
-          <ul>
-            <li>Fiscalização e conservação das instalações elétricas, hidráulicas e estruturais básicas;</li>
-            <li>Recepção e acompanhamento de prestadores de serviço e concessionárias;</li>
-            <li>Cumprimento do regimento interno e apoio aos moradores com cordialidade e postura.</li>
-          </ul>
-          <button type="button" class="chat-action-btn" onclick="scrollToSection('#orcamento');">
-            Solicitar Proposta com Zeladoria
-          </button>
+          <p>O serviço de zeladoria é essencial${uName}! O zelador da HRC atua como o braço direito do síndico e dos gestores no dia a dia. 🛡️</p>
+          <p>Ele acompanha o funcionamento geral do condomínio, inspeciona instalações elétricas e hidráulicas básicas, recebe prestadores de serviço e garante a conservação das áreas compartilhadas.</p>
+          <p>Você gostaria de contratar a zeladoria junto com a equipe de limpeza ou precisa apenas do serviço de zelador?</p>
+          <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;">
+            <button type="button" class="chat-action-btn" onclick="scrollToSection('#orcamento');">
+              📝 Solicitar Proposta de Zeladoria
+            </button>
+            ${waUrl !== '#' ? `
+            <a href="${waUrl}" target="_blank" rel="noopener" class="chat-action-btn chat-action-btn--wa" style="display:inline-flex; text-decoration:none;">
+              💬 Tirar Dúvidas no WhatsApp
+            </a>` : ''}
+          </div>
+          ${askNameReminder}
         `;
       }
 
-      // Intent: Pós-Obra / Reforma / Construção
+      // 7. Intent: Pós-Obra / Reforma / Construção
       if (q.includes('pos-obra') || q.includes('pós obra') || q.includes('pos obra') || q.includes('pós-obra') || q.includes('obra') || q.includes('reforma') || q.includes('pintura')) {
+        chatState.lastTopic = 'pos_obra';
         return `
-          <p>🔨 <strong>Limpeza Pós-Obra Profissional:</strong></p>
-          <p>Eliminamos resíduos pesados e sujeira fina que a limpeza comum não consegue tirar:</p>
-          <ul>
-            <li>Remoção técnica de respingos de tinta, restos de cimento, rejunte, cola e fitas;</li>
-            <li>Limpeza minuciosa de pisos, rodapés, esquadrias, vidros e louças sanitárias;</li>
-            <li>Imóvel 100% pronto para moradia imediata ou inauguração comercial!</li>
-          </ul>
-          <button type="button" class="chat-action-btn" onclick="scrollToSection('#orcamento');">
-            Solicitar Orçamento Pós-Obra
-          </button>
+          <p>A limpeza pós-obra é uma das nossas grandes especialidades${uName}! 🔨✨</p>
+          <p>Nossa equipe entra com maquinário e produtos profissionais para retirar todo o pó fino de gesso, respingos de tinta, restos de cimento e rejuntes em pisos, vidraças, rodapés e sanitários, deixando o ambiente <strong>100% pronto para moradia imediata ou inauguração comercial</strong>.</p>
+          <p>O seu espaço é residencial ou comercial? Quantos metros quadrados tem aproximadamente?</p>
+          <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;">
+            <button type="button" class="chat-action-btn" onclick="scrollToSection('#orcamento');">
+              📝 Orçamento para Pós-Obra
+            </button>
+            ${waUrl !== '#' ? `
+            <a href="${waUrl}" target="_blank" rel="noopener" class="chat-action-btn chat-action-btn--wa" style="display:inline-flex; text-decoration:none;">
+              💬 Falar no WhatsApp
+            </a>` : ''}
+          </div>
+          ${askNameReminder}
         `;
       }
 
-      // Intent: Limpeza de Vidros / Fachadas
+      // 8. Intent: Limpeza de Vidros
       if (q.includes('vidro') || q.includes('vidros') || q.includes('janela') || q.includes('fachada') || q.includes('vitrine')) {
+        chatState.lastTopic = 'vidros';
         return `
-          <p>✨ <strong>Limpeza Especializada de Vidros:</strong></p>
-          <p>Realizamos a higienização técnica de superfícies envidraçadas:</p>
-          <ul>
-            <li>Janelas, portas de correr, vitrines e divisórias internas de escritórios;</li>
-            <li>Produtos desengordurantes que evitam manchas e prolongam a transparência;</li>
-            <li>Equipamentos de segurança adequados e equipe qualificada.</li>
-          </ul>
-          <button type="button" class="chat-action-btn" onclick="scrollToSection('#servicos');">
-            Ver Detalhes do Serviço
-          </button>
+          <p>Cuidamos sim${uName}! Fazemos a limpeza técnica de superfícies envidraçadas, vitrines, janelas e divisórias internas com produtos específicos anti-manchas e equipamentos de segurança. ✨</p>
+          <p>Você gostaria de incluir os vidros em um contrato contínuo ou precisa de um atendimento pontual?</p>
+          <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;">
+            <button type="button" class="chat-action-btn" onclick="scrollToSection('#servicos');">
+              🧹 Conhecer Nossos Serviços
+            </button>
+          </div>
+          ${askNameReminder}
         `;
       }
 
-      // Intent: Regiões / Bairros / Cidades / Localização / Onde atendem
+      // 9. Intent: Regiões / Bairros / Cidades / Onde atendem
       if (q.includes('regiao') || q.includes('região') || q.includes('bairro') || q.includes('cidade') || q.includes('porto alegre') || q.includes('canoas') || q.includes('vale') || q.includes('onde') || q.includes('local') || q.includes('atendem')) {
         return `
-          <p>📍 <strong>Regiões Atendidas pela HRC:</strong></p>
-          <p>Cobrimos <strong>todos os bairros de Porto Alegre</strong> (Zona Central, Moinhos de Vento, Bela Vista, Petrópolis, Menino Deus, Zona Sul, Zona Norte, etc.) e as <strong>principais cidades da Região Metropolitana</strong>:</p>
-          <ul>
-            <li>Canoas, Esteio, Sapucaia do Sul, São Leopoldo e Novo Hamburgo;</li>
-            <li>Gravataí, Cachoeirinha, Viamão, Alvorada e Guaíba.</li>
-          </ul>
-          <button type="button" class="chat-action-btn" onclick="scrollToSection('#regioes');">
-            🗺️ Conferir no Mapa Interativo
-          </button>
+          <p>Nós atendemos em <strong>todos os bairros de Porto Alegre</strong> (Zona Central, Moinhos de Vento, Bela Vista, Petrópolis, Menino Deus, Zona Sul, Zona Norte, etc.) e em toda a <strong>Região Metropolitana</strong>${uName}! 📍</p>
+          <p>Cidades como: <strong>Canoas, Esteio, Sapucaia, São Leopoldo, Novo Hamburgo, Gravataí, Cachoeirinha, Viamão e Guaíba</strong>.</p>
+          <p>Em qual cidade ou bairro fica o seu imóvel?</p>
+          <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;">
+            <button type="button" class="chat-action-btn" onclick="scrollToSection('#regioes');">
+              🗺️ Ver Mapa de Atendimento
+            </button>
+          </div>
+          ${askNameReminder}
         `;
       }
 
-      // Intent: Contrato / Pagamento / Garantias / Vantagens
-      if (q.includes('contrat') || q.includes('pagamento') || q.includes('garantia') || q.includes('nota fiscal') || q.includes('boleto') || q.includes('frequencia') || q.includes('substitui')) {
+      // 10. Intent: Orçamento / Preços / Valores / Quanto custa / Diária
+      if (q.includes('orçamento') || q.includes('orcamento') || q.includes('preço') || q.includes('preco') || q.includes('valor') || q.includes('custo') || q.includes('quanto') || q.includes('tabela') || q.includes('diaria') || q.includes('diária')) {
         return `
-          <p>🤝 <strong>Diferenciais dos Contratos HRC:</strong></p>
+          <p>Com maior prazer${uName}! Para que a gente consiga te passar o valor mais justo e vantajoso, nossa equipe avalia:</p>
           <ul>
-            <li><strong>Sem preocupação trabalhista:</strong> todos os encargos, EPIs, uniformes e benefícios são de responsabilidade da HRC;</li>
-            <li><strong>Garantia de reposição rápida:</strong> em caso de falta, atestado ou férias, enviamos outro profissional qualificado;</li>
-            <li><strong>Faturamento transparente:</strong> emissão de nota fiscal de serviços e pagamento facilitado via boleto bancário.</li>
+            <li>O tamanho aproximado do espaço (ou número de andares/salas);</li>
+            <li>A frequência necessária (diária, semanal, quinzenal ou pontual);</li>
+            <li>O tipo de serviço (condomínio, empresarial, zeladoria, vidros ou pós-obra).</li>
           </ul>
-          <button type="button" class="chat-action-btn" onclick="scrollToSection('#orcamento');">
-            Receber uma Minuta de Proposta
-          </button>
+          <p>Podemos calcular uma estimativa agora mesmo! Você prefere preencher nosso formulário rápido ou me chamar no WhatsApp?</p>
+          <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;">
+            <button type="button" class="chat-action-btn" onclick="scrollToSection('#orcamento');">
+              📝 Preencher Formulário
+            </button>
+            ${waUrl !== '#' ? `
+            <a href="${waUrl}" target="_blank" rel="noopener" class="chat-action-btn chat-action-btn--wa" style="display:inline-flex; text-decoration:none;">
+              💬 Falar no WhatsApp
+            </a>` : ''}
+          </div>
+          ${askNameReminder}
         `;
       }
 
-      // Intent: WhatsApp / Atendente Humano / Telefone / Contato
-      if (q.includes('whatsapp') || q.includes('whats') || q.includes('telefone') || q.includes('humano') || q.includes('falar') || q.includes('contato') || q.includes('ligar') || q.includes('celular')) {
+      // 11. Intent: WhatsApp / Atendente Humano / Telefone
+      if (q.includes('whatsapp') || q.includes('whats') || q.includes('telefone') || q.includes('humano') || q.includes('falar') || q.includes('contato') || q.includes('ligar') || q.includes('celular') || q.includes('numero')) {
         return `
-          <p>📲 Claro! Se você prefere falar diretamente no WhatsApp ou receber um contato telefônico da nossa equipe, é muito simples:</p>
+          <p>Com certeza${uName}! Nossa equipe humana de coordenação está prontinha no WhatsApp para tirar qualquer dúvida em tempo real e montar sua proposta. 📲</p>
           ${waUrl !== '#' ? `
-          <a href="${waUrl}" target="_blank" rel="noopener" class="chat-action-btn chat-action-btn--wa" style="display:inline-flex; text-decoration:none;">
-            💬 Conversar no WhatsApp Agora
+          <a href="${waUrl}" target="_blank" rel="noopener" class="chat-action-btn chat-action-btn--wa" style="display:inline-flex; text-decoration:none; margin-top:6px;">
+            💬 Abrir Conversa no WhatsApp
           </a>` : '<p>Nosso WhatsApp estará disponível em instantes.</p>'}
-          <p style="margin-top:8px; font-size:12.5px; color:var(--gray-600);">Nosso atendimento pelo WhatsApp é rápido e personalizado!</p>
+          ${askNameReminder}
         `;
       }
 
-      // Fallback Inteligente e Consultivo
+      // 12. Se o usuário respondeu dados como bairros, metragens, andares ou confirmações
+      if (q.includes('porto alegre') || q.includes('canoas') || q.includes('gravatai') || q.includes('gravataí') || q.includes('moinhos') || q.includes('centro') || q.includes('bela vista') || q.includes('petropolis') || q.includes('andar') || q.includes('andares') || q.includes('bloco') || q.includes('m2') || q.includes('metros') || q.includes('diario') || q.includes('diário') || q.includes('semana') || q.includes('sim') || q.includes('residencial') || q.includes('comercial')) {
+        return `
+          <p>Perfeito${uName}! Já anotei esses detalhes aqui. 📝</p>
+          <p>Nós atendemos espaços exatamente com essas características na sua região, com supervisão constante e garantia de reposição de equipe.</p>
+          <p>Para te enviarmos a proposta formalizada ou agendarmos uma rápida visita técnica sem compromisso, você prefere me chamar no WhatsApp ou preencher o formulário?</p>
+          <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;">
+            ${waUrl !== '#' ? `
+            <a href="${waUrl}" target="_blank" rel="noopener" class="chat-action-btn chat-action-btn--wa" style="display:inline-flex; text-decoration:none;">
+              💬 Enviar no WhatsApp
+            </a>` : ''}
+            <button type="button" class="chat-action-btn" onclick="scrollToSection('#orcamento');">
+              📝 Preencher Formulário
+            </button>
+          </div>
+          ${askNameReminder}
+        `;
+      }
+
+      // 13. Fallback Conversacional e Consultivo
       return `
-        <p>Compreendi sua mensagem! Para responder detalhadamente sobre a sua demanda específica e te passar todos os detalhes:</p>
-        <p>Você pode <strong>solicitar um orçamento rápido</strong> pelo formulário ou me chamar diretamente no <strong>WhatsApp</strong>:</p>
-        <div style="display:flex; flex-direction:column; gap:6px; margin-top:8px;">
+        <p>Entendi perfeitamente${uName}! Como cada espaço tem particularidades únicas, nós elaboramos soluções sob medida para você.</p>
+        <p>Como você prefere dar o próximo passo?</p>
+        <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;">
           <button type="button" class="chat-action-btn" onclick="scrollToSection('#orcamento');">
-            📝 Preencher Formulário de Orçamento
+            📝 Solicitar Orçamento
           </button>
           ${waUrl !== '#' ? `
           <a href="${waUrl}" target="_blank" rel="noopener" class="chat-action-btn chat-action-btn--wa" style="display:inline-flex; text-decoration:none;">
-            💬 Chamar no WhatsApp
+            💬 Conversar no WhatsApp
           </a>` : ''}
         </div>
+        ${askNameReminder}
       `;
     }
 
