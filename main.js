@@ -27,15 +27,30 @@
       el.rel = 'noopener noreferrer';
     });
 
-    // Phone display
+    const phoneClean = (cfg.telefone || '').replace(/\D/g, '');
+    const telLink = phoneClean ? 'tel:' + phoneClean : '#';
+
+    // Phone display & click-to-call
     ['footerPhoneDisplay', 'orcPhoneDisplay'].forEach(id => {
       const el = document.getElementById(id);
-      if (el) el.textContent = cfg.telefone || '[INSERIR TELEFONE]';
+      if (el) {
+        el.textContent = cfg.telefone || '(51) 98225-1103';
+        if (telLink !== '#') {
+          el.style.cursor = 'pointer';
+          el.onclick = () => { window.location.href = telLink; };
+        }
+      }
     });
 
     // WhatsApp display
     const waDisp = document.getElementById('footerWhatsAppDisplay');
-    if (waDisp) waDisp.textContent = cfg.whatsapp || '[INSERIR WHATSAPP]';
+    if (waDisp) {
+      waDisp.textContent = cfg.telefone || '(51) 98225-1103';
+      if (waUrl !== '#') {
+        waDisp.style.cursor = 'pointer';
+        waDisp.onclick = () => { window.open(waUrl, '_blank', 'noopener,noreferrer'); };
+      }
+    }
 
     // Email display (oculto se nao preenchido)
     const orcEmailEl = document.getElementById('orcEmailDisplay');
@@ -58,7 +73,7 @@
 
     // Address display
     const addr = document.getElementById('footerAddressDisplay');
-    if (addr) addr.textContent = cfg.endereco || '[INSERIR ENDERECO]';
+    if (addr) addr.textContent = cfg.endereco || 'Porto Alegre e Região Metropolitana - RS';
 
     // Instagram
     if (cfg.instagram) {
@@ -1047,7 +1062,6 @@
     initFaq();
     initForm();
     initSmoothScroll();
-    initPhoneLinks();
   }
 
   if (document.readyState === 'loading') {

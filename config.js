@@ -18,11 +18,11 @@ const HRC_CONFIG = {
   // -----------------------------------------
 
   // Telefone de contato (ex: "(11) 99999-9999")
-  telefone: '',
+  telefone: '(51) 98225-1103',
 
   // Numero do WhatsApp sem formatacao - somente digitos com DDD e DDI
   // Exemplo Brasil: "5511999999999" (55 = DDI, 11 = DDD, depois o numero)
-  whatsapp: '',
+  whatsapp: '5551982251103',
 
   // E-mail que recebera os pedidos de orcamento (oculto do publico)
   emailOrcamento: 'gruporotasegpoa@gmail.com',
