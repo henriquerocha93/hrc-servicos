@@ -368,6 +368,35 @@
     }
   }
 
+  // ---- FAQ Accordion ----
+  function initFaq() {
+    const faqQuestions = document.querySelectorAll('.faq__question');
+    faqQuestions.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const item = btn.closest('.faq__item');
+        const isActive = item.classList.contains('active');
+
+        // Close others
+        document.querySelectorAll('.faq__item').forEach(other => {
+          if (other !== item) {
+            other.classList.remove('active');
+            const otherBtn = other.querySelector('.faq__question');
+            if (otherBtn) otherBtn.setAttribute('aria-expanded', 'false');
+          }
+        });
+
+        // Toggle clicked
+        if (isActive) {
+          item.classList.remove('active');
+          btn.setAttribute('aria-expanded', 'false');
+        } else {
+          item.classList.add('active');
+          btn.setAttribute('aria-expanded', 'true');
+        }
+      });
+    });
+  }
+
   // ---- Init ----
   function init() {
     populateConfig();
@@ -375,6 +404,7 @@
     initMobileMenu();
     initAnimations();
     initActiveNav();
+    initFaq();
     initForm();
     initSmoothScroll();
     initPhoneLinks();

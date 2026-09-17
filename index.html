@@ -117,6 +117,56 @@
   }
   </script>
 
+  <!-- FAQ Structured Data (FAQPage Schema for Google Rich Snippets) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Quais serviços de limpeza e zeladoria a HRC oferece?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Oferecemos terceirização completa para condomínios residenciais e comerciais, empresas, lojas e escritórios, incluindo limpeza de condomínios, zeladoria predial, áreas comuns, vidros, pós-obra e conservação rotineira."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Como funciona a solicitação de orçamento?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "É 100% gratuito e rápido. Basta preencher o formulário no site ou entrar em contato via WhatsApp para receber uma proposta personalizada para seu espaço."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "A equipe de profissionais é treinada e uniformizada?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Sim. Todos os colaboradores contam com treinamento especializado para cada tipo de ambiente, uniformes de identificação completos e cumprem normas rigorosas de qualidade."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Qual a flexibilidade dos contratos para condomínios e empresas?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Trabalhamos com contratos recorrentes flexíveis (mensais ou anuais com acompanhamento constante) e também atendimentos pontuais."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Em quais regiões e cidades do RS a HRC atende?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Atendemos todos os bairros de Porto Alegre e os principais municípios da Região Metropolitana como Canoas, Gravataí, Cachoeirinha, Esteio, São Leopoldo, Novo Hamburgo e Viamão."
+        }
+      }
+    ]
+  }
+  </script>
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
@@ -485,6 +535,116 @@
             <div class="step-card__icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
             <h3>Começamos o Serviço</h3>
             <p>Após a aprovação, organizamos a equipe e iniciamos o atendimento com pontualidade e responsabilidade.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- REGIOES ATENDIDAS (SEO LOCAL) -->
+    <section class="regioes section" id="regioes">
+      <div class="container">
+        <div class="section__header" data-animate="fade-up">
+          <span class="section__label">Onde Atuamos</span>
+          <h2 class="section__title">Atendimento em Porto Alegre e Região Metropolitana</h2>
+          <p class="section__subtitle">Prestamos serviços profissionais de limpeza e zeladoria em diversas localidades com rapidez e equipe dedicada.</p>
+        </div>
+        <div class="regioes__grid" data-animate="fade-up">
+          <div class="regioes__card">
+            <div class="regioes__card-header">
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+              <h3>Porto Alegre (Todos os Bairros)</h3>
+            </div>
+            <div class="regioes__tags">
+              <span>Moinhos de Vento</span>
+              <span>Bela Vista</span>
+              <span>Petrópolis</span>
+              <span>Menino Deus</span>
+              <span>Centro Histórico</span>
+              <span>Mont'Serrat</span>
+              <span>Auxiliadora</span>
+              <span>Passo d'Areia</span>
+              <span>Higienópolis</span>
+              <span>Três Figueiras</span>
+              <span>Zona Sul</span>
+              <span>Zona Norte</span>
+              <span>Zona Leste</span>
+            </div>
+          </div>
+          <div class="regioes__card">
+            <div class="regioes__card-header">
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+              <h3>Região Metropolitana e Vale dos Sinos</h3>
+            </div>
+            <div class="regioes__tags">
+              <span>Canoas</span>
+              <span>Gravataí</span>
+              <span>Cachoeirinha</span>
+              <span>Esteio</span>
+              <span>Sapucaia do Sul</span>
+              <span>São Leopoldo</span>
+              <span>Novo Hamburgo</span>
+              <span>Viamão</span>
+              <span>Alvorada</span>
+              <span>Guaíba</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ / PERGUNTAS FREQUENTES (SEO SNIPPETS) -->
+    <section class="faq section section--gray" id="faq">
+      <div class="container">
+        <div class="section__header" data-animate="fade-up">
+          <span class="section__label">Dúvidas Comuns</span>
+          <h2 class="section__title">Perguntas Frequentes sobre Nossos Serviços</h2>
+          <p class="section__subtitle">Confira as principais informações sobre como contratar a HRC Serviços para o seu condomínio ou empresa.</p>
+        </div>
+        <div class="faq__list" data-animate="fade-up">
+          <div class="faq__item">
+            <button class="faq__question" type="button" aria-expanded="false">
+              <span>Quais serviços de limpeza e zeladoria a HRC oferece?</span>
+              <svg class="faq__icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </button>
+            <div class="faq__answer">
+              <p>Oferecemos terceirização completa para condomínios residenciais e comerciais, empresas, lojas e escritórios. Nossos serviços incluem: limpeza de condomínios, zeladoria predial, limpeza de áreas comuns, limpeza de vidros, limpeza pós-obra e conservação rotineira (diária, semanal ou quinzenal).</p>
+            </div>
+          </div>
+          <div class="faq__item">
+            <button class="faq__question" type="button" aria-expanded="false">
+              <span>Como funciona a solicitação de orçamento?</span>
+              <svg class="faq__icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </button>
+            <div class="faq__answer">
+              <p>É 100% gratuito e rápido. Basta preencher o formulário abaixo ou entrar em contato via WhatsApp. Nossa equipe avalia a metragem, periodicidade e necessidades específicas para elaborar uma proposta personalizada.</p>
+            </div>
+          </div>
+          <div class="faq__item">
+            <button class="faq__question" type="button" aria-expanded="false">
+              <span>A equipe de profissionais é treinada e uniformizada?</span>
+              <svg class="faq__icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </button>
+            <div class="faq__answer">
+              <p>Sim. Todos os colaboradores contam com treinamento especializado para cada tipo de ambiente, utilizam uniformes de identificação completos e cumprem rigorosamente as normas de segurança e postura profissional.</p>
+            </div>
+          </div>
+          <div class="faq__item">
+            <button class="faq__question" type="button" aria-expanded="false">
+              <span>Qual a flexibilidade dos contratos para condomínios e empresas?</span>
+              <svg class="faq__icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </button>
+            <div class="faq__answer">
+              <p>Trabalhamos com contratos recorrentes flexíveis (mensais ou anuais com acompanhamento constante) e também com atendimentos pontuais (como limpezas pós-obra ou faxinas detalhadas).</p>
+            </div>
+          </div>
+          <div class="faq__item">
+            <button class="faq__question" type="button" aria-expanded="false">
+              <span>Em quais regiões e cidades do RS a HRC atende?</span>
+              <svg class="faq__icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </button>
+            <div class="faq__answer">
+              <p>Atendemos todos os bairros de Porto Alegre e os principais municípios da Região Metropolitana, incluindo Canoas, Gravataí, Cachoeirinha, Esteio, São Leopoldo, Novo Hamburgo e Viamão.</p>
+            </div>
           </div>
         </div>
       </div>
