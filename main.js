@@ -8,7 +8,7 @@
 
   const cfg = window.HRC_CONFIG || {};
 
-  // ---- WhatsApp URL builder ----
+  // ---- WhatsApp URL builder (Orcamento) ----
   function getWhatsAppUrl() {
     const num = (cfg.whatsapp || '').replace(/\D/g, '');
     const msg = cfg.whatsappMsg || 'Ol%C3%A1! Gostaria de solicitar um or%C3%A7amento.';
@@ -16,13 +16,29 @@
     return 'https://wa.me/' + num + '?text=' + msg;
   }
 
+  // ---- WhatsApp URL builder (Candidatura) ----
+  function getWhatsAppCandidaturaUrl() {
+    const num = (cfg.whatsapp || '').replace(/\D/g, '');
+    const msg = cfg.whatsappCandidaturaMsg || 'Ol%C3%A1! Gostaria de me candidatar a uma vaga na equipe da HRC Servi%C3%A7os.';
+    if (!num) return '#';
+    return 'https://wa.me/' + num + '?text=' + msg;
+  }
+
   // ---- Populate contact info ----
   function populateConfig() {
     const waUrl = getWhatsAppUrl();
+    const waCandUrl = getWhatsAppCandidaturaUrl();
 
-    // WhatsApp buttons
+    // WhatsApp buttons (Orcamento)
     document.querySelectorAll('.whatsapp-btn').forEach(el => {
       if (waUrl !== '#') el.href = waUrl;
+      el.target = '_blank';
+      el.rel = 'noopener noreferrer';
+    });
+
+    // WhatsApp buttons (Candidatura)
+    document.querySelectorAll('.whatsapp-candidatura-btn').forEach(el => {
+      if (waCandUrl !== '#') el.href = waCandUrl;
       el.target = '_blank';
       el.rel = 'noopener noreferrer';
     });
@@ -335,6 +351,239 @@
         console.error('Erro ao enviar formulário:', err);
         if (errorBox && errorMsg) {
           errorMsg.textContent = 'Não foi possível enviar a solicitação no momento. Verifique sua conexão ou tente novamente.';
+          errorBox.style.display = 'flex';
+        }
+      } finally {
+        if (submitBtn) submitBtn.disabled = false;
+        if (btnText) btnText.style.display = '';
+        if (btnSpinner) btnSpinner.style.display = 'none';
+      }
+    });
+  }
+
+  // ---- Carreiras / Trabalhe Conosco Form & File Upload ----
+  function initCarreirasForm() {
+    const form          = document.getElementById('candidaturaForm');
+    const dropzone      = document.getElementById('uploadDropzone');
+    const fileInput     = document.getElementById('candidaturaFile');
+    const promptWrap    = document.getElementById('uploadPrompt');
+    const previewWrap   = document.getElementById('uploadPreview');
+    const imgPreview    = document.getElementById('uploadImgPreview');
+    const pdfIcon       = document.getElementById('uploadPdfIcon');
+    const fileNameEl    = document.getElementById('uploadFileName');
+    const fileSizeEl    = document.getElementById('uploadFileSize');
+    const removeBtn     = document.getElementById('uploadRemoveBtn');
+    const errorBox      = document.getElementById('candidaturaError');
+    const errorMsg      = document.getElementById('candidaturaErrorMsg');
+    const success       = document.getElementById('candidaturaSuccess');
+    const submitBtn     = document.getElementById('candidaturaSubmitBtn');
+    const resetBtn      = document.getElementById('candidaturaResetBtn');
+
+    if (!form || !fileInput) return;
+
+    const btnText    = submitBtn?.querySelector('.btn__text');
+    const btnSpinner = submitBtn?.querySelector('.btn__spinner');
+
+    let selectedFile = null;
+
+    // Helper to format file size
+    function formatFileSize(bytes) {
+      if (bytes < 1024) return bytes + ' B';
+      if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+      return (bytes / 1048576).toFixed(1) + ' MB';
+    }
+
+    // Handle file selection and preview
+    function handleFile(file) {
+      if (!file) return;
+
+      // 10MB limit
+      if (file.size > 10 * 1024 * 1024) {
+        alert('O arquivo selecionado é muito grande (máximo 10MB). Por favor escolha uma foto ou currículo menor.');
+        clearFile();
+        return;
+      }
+
+      const isImage = file.type.startsWith('image/');
+      const isPdf   = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+
+      if (!isImage && !isPdf) {
+        alert('Formato de arquivo não suportado. Por favor, envie uma foto (JPG, PNG, WEBP) ou currículo em PDF.');
+        clearFile();
+        return;
+      }
+
+      selectedFile = file;
+      fileNameEl.textContent = file.name;
+      fileSizeEl.textContent = formatFileSize(file.size);
+
+      if (isImage) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          imgPreview.src = e.target.result;
+          imgPreview.style.display = 'block';
+          pdfIcon.style.display = 'none';
+        };
+        reader.readAsDataURL(file);
+      } else {
+        imgPreview.style.display = 'none';
+        pdfIcon.style.display = 'flex';
+      }
+
+      promptWrap.style.display = 'none';
+      previewWrap.style.display = 'flex';
+    }
+
+    function clearFile() {
+      selectedFile = null;
+      fileInput.value = '';
+      imgPreview.src = '';
+      imgPreview.style.display = 'none';
+      pdfIcon.style.display = 'none';
+      previewWrap.style.display = 'none';
+      promptWrap.style.display = 'flex';
+    }
+
+    // Input Change
+    fileInput.addEventListener('change', (e) => {
+      const file = e.target.files?.[0];
+      if (file) handleFile(file);
+    });
+
+    // Remove file button
+    if (removeBtn) {
+      removeBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        clearFile();
+      });
+    }
+
+    // Drag & Drop events on dropzone
+    if (dropzone) {
+      ['dragenter', 'dragover'].forEach(eventName => {
+        dropzone.addEventListener(eventName, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          dropzone.classList.add('dragover');
+        }, false);
+      });
+
+      ['dragleave', 'drop'].forEach(eventName => {
+        dropzone.addEventListener(eventName, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          dropzone.classList.remove('dragover');
+        }, false);
+      });
+
+      dropzone.addEventListener('drop', (e) => {
+        const dt = e.dataTransfer;
+        const file = dt.files?.[0];
+        if (file) {
+          fileInput.files = dt.files;
+          handleFile(file);
+        }
+      });
+    }
+
+    // Form Reset
+    if (resetBtn) {
+      resetBtn.addEventListener('click', () => {
+        form.reset();
+        clearFile();
+        form.style.display = 'block';
+        if (success) success.style.display = 'none';
+        if (errorBox) errorBox.style.display = 'none';
+        form.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      });
+    }
+
+    // Phone Auto-Format (Mascara)
+    const telInput = form.querySelector('#candTelefone');
+    if (telInput) {
+      telInput.addEventListener('input', (e) => {
+        let v = e.target.value.replace(/\D/g, '');
+        if (v.length > 11) v = v.substring(0, 11);
+        if (v.length > 6) {
+          v = `(${v.substring(0,2)}) ${v.substring(2,7)}-${v.substring(7)}`;
+        } else if (v.length > 2) {
+          v = `(${v.substring(0,2)}) ${v.substring(2)}`;
+        } else if (v.length > 0) {
+          v = `(${v}`;
+        }
+        e.target.value = v;
+      });
+    }
+
+    // Form Submit Handler (Multipart FormSubmit AJAX)
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (errorBox) errorBox.style.display = 'none';
+
+      // Validation
+      let isValid = true;
+      const requiredInputs = form.querySelectorAll('[required]');
+      requiredInputs.forEach(input => {
+        if (!input.value.trim()) {
+          input.classList.add('error');
+          isValid = false;
+        } else {
+          input.classList.remove('error');
+        }
+      });
+
+      if (!isValid) {
+        if (errorBox && errorMsg) {
+          errorMsg.textContent = 'Por favor, preencha todos os campos obrigatórios marcados com * para enviar sua candidatura.';
+          errorBox.style.display = 'flex';
+          errorBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+        return;
+      }
+
+      // UI Loading state
+      if (submitBtn) submitBtn.disabled = true;
+      if (btnText) btnText.style.display = 'none';
+      if (btnSpinner) btnSpinner.style.display = 'inline-flex';
+
+      const targetEmail = cfg.emailCandidaturas || cfg.emailOrcamento || 'gruporotasegpoa@gmail.com';
+
+      // Prepare FormData (supports file attachment upload natively on FormSubmit)
+      const formData = new FormData(form);
+
+      // Append custom metadata
+      const candNome = form.querySelector('#candNome')?.value || '';
+      const candVaga = form.querySelector('#candVaga')?.value || 'Vaga';
+      formData.set('_subject', `Nova Candidatura: ${candNome} - ${candVaga}`);
+      formData.set('_template', 'table');
+
+      try {
+        const endpoint = 'https://formsubmit.co/ajax/' + encodeURIComponent(targetEmail);
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json'
+          },
+          body: formData
+        });
+
+        const result = await response.json();
+
+        if (response.ok && (result.success === 'true' || result.success === true || result.message)) {
+          // Success!
+          form.style.display = 'none';
+          if (success) {
+            success.style.display = 'flex';
+            success.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        } else {
+          throw new Error(result.message || 'Erro ao processar candidatura.');
+        }
+      } catch (err) {
+        console.error('Erro ao enviar candidatura:', err);
+        if (errorBox && errorMsg) {
+          errorMsg.textContent = 'Não foi possível enviar sua candidatura no momento. Verifique sua conexão ou candidate-se direto pelo WhatsApp abaixo.';
           errorBox.style.display = 'flex';
         }
       } finally {
@@ -973,7 +1222,28 @@
         `;
       }
 
-      // 12. Se o usuário respondeu dados como bairros, metragens, andares ou confirmações
+      // 12. Intent: Carreiras / Vagas / Emprego / Trabalhe Conosco / Enviar Currículo
+      if (q.includes('vaga') || q.includes('vagas') || q.includes('emprego') || q.includes('trabalh') || q.includes('curriculo') || q.includes('currículo') || q.includes('candidat') || q.includes('oportunidade') || q.includes('rh') || q.includes('contrat')) {
+        chatState.lastTopic = 'carreiras';
+        const waCandUrl = getWhatsAppCandidaturaUrl();
+        return `
+          <p>Que excelente notícia${uName}! Ficamos muito felizes pelo seu interesse em fazer parte da família <strong>HRC Serviços</strong>! 🤝✨</p>
+          <p>Nós valorizamos pessoas responsáveis, pontuais e com vontade de crescer. Temos oportunidades contínuas para <strong>Auxiliar de Limpeza, Zeladoria, Limpeza de Vidros, Pós-Obra e Liderança</strong>, com salário e benefícios sempre em dia.</p>
+          <p>Você pode preencher nosso formulário online anexando sua foto/currículo ou enviar seus dados diretamente ao nosso RH no WhatsApp:</p>
+          <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;">
+            <button type="button" class="chat-action-btn" onclick="scrollToSection('#trabalhe-conosco');">
+              📄 Preencher Candidatura com Foto
+            </button>
+            ${waCandUrl !== '#' ? `
+            <a href="${waCandUrl}" target="_blank" rel="noopener" class="chat-action-btn chat-action-btn--wa" style="display:inline-flex; text-decoration:none;">
+              💬 Falar com RH no WhatsApp
+            </a>` : ''}
+          </div>
+          ${askNameReminder}
+        `;
+      }
+
+      // 13. Se o usuário respondeu dados como bairros, metragens, andares ou confirmações
       if (q.includes('porto alegre') || q.includes('canoas') || q.includes('gravatai') || q.includes('gravataí') || q.includes('moinhos') || q.includes('centro') || q.includes('bela vista') || q.includes('petropolis') || q.includes('andar') || q.includes('andares') || q.includes('bloco') || q.includes('m2') || q.includes('metros') || q.includes('diario') || q.includes('diário') || q.includes('semana') || q.includes('sim') || q.includes('residencial') || q.includes('comercial')) {
         return `
           <p>Perfeito${uName}! Já anotei esses detalhes aqui. 📝</p>
@@ -992,7 +1262,7 @@
         `;
       }
 
-      // 13. Fallback Conversacional e Consultivo
+      // 14. Fallback Conversacional e Consultivo
       return `
         <p>Entendi perfeitamente${uName}! Como cada espaço tem particularidades únicas, nós elaboramos soluções sob medida para você.</p>
         <p>Como você prefere dar o próximo passo?</p>
@@ -1061,6 +1331,7 @@
     initChatbot();
     initFaq();
     initForm();
+    initCarreirasForm();
     initSmoothScroll();
   }
 

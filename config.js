@@ -27,6 +27,9 @@ const HRC_CONFIG = {
   // E-mail que recebera os pedidos de orcamento (oculto do publico)
   emailOrcamento: 'gruporotasegpoa@gmail.com',
 
+  // E-mail que recebera os formularios de Trabalhe Conosco / Candidaturas
+  emailCandidaturas: 'gruporotasegpoa@gmail.com',
+
   // E-mail publico para exibicao (deixe vazio para manter oculto no site)
   email: '',
 
@@ -36,8 +39,11 @@ const HRC_CONFIG = {
   // Link do perfil no Instagram (ex: "https://instagram.com/hrcservicos")
   instagram: '',
 
-  // Mensagem padrao pre-preenchida no WhatsApp
+  // Mensagem padrao pre-preenchida no WhatsApp para Orcamento
   whatsappMsg: 'Ol%C3%A1! Gostaria de solicitar um or%C3%A7amento para servi%C3%A7os de limpeza e zeladoria da HRC Servi%C3%A7os.',
+
+  // Mensagem padrao pre-preenchida no WhatsApp para Candidatura de Emprego
+  whatsappCandidaturaMsg: 'Ol%C3%A1! Gostaria de me candidatar a uma vaga na equipe da HRC Servi%C3%A7os.',
 
 };
 

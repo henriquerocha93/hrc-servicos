@@ -182,7 +182,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
-  <link rel="stylesheet" href="style.css?v=2.4" />
+  <link rel="stylesheet" href="style.css?v=2.6" />
 </head>
 <body>
 
@@ -207,6 +207,7 @@
         <li><a href="#diferenciais" class="nav__link">Diferenciais</a></li>
         <li><a href="#regioes" class="nav__link">Onde Atuamos</a></li>
         <li><a href="#orcamento" class="nav__link">Orçamento</a></li>
+        <li><a href="#trabalhe-conosco" class="nav__link">Trabalhe Conosco</a></li>
         <li><a href="#contato" class="nav__link">Contato</a></li>
       </ul>
       <a href="#orcamento" class="btn btn--primary nav__cta">SOLICITAR ORÇAMENTO</a>
@@ -827,6 +828,227 @@
       </div>
     </section>
 
+    <!-- TRABALHE CONOSCO / FACA PARTE DO TIME -->
+    <section class="carreiras section" id="trabalhe-conosco">
+      <div class="container">
+        
+        <div class="section-header" data-animate="fade-up">
+          <span class="section__label">Oportunidades & Carreiras</span>
+          <h2 class="section__title">Faça parte do time HRC Serviços</h2>
+          <p class="section__subtitle">Valorizamos profissionais dedicados, responsáveis e com vontade de crescer. Trabalhe em um ambiente respeitoso, seguro, com remuneração e benefícios rigorosamente em dia.</p>
+        </div>
+
+        <!-- Beneficios de trabalhar na HRC -->
+        <div class="carreiras__benefits" data-animate="fade-up">
+          <div class="carreiras__benefit-card">
+            <div class="carreiras__benefit-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+            </div>
+            <h4>Salário e Benefícios em Dia</h4>
+            <p>Pagamento pontual, Vale-Transporte, Vale-Alimentação/Refeição e direitos garantidos.</p>
+          </div>
+
+          <div class="carreiras__benefit-card">
+            <div class="carreiras__benefit-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+            </div>
+            <h4>Segurança & Uniformes</h4>
+            <p>EPIs certificados, uniformes completos de alta qualidade e suporte contínuo no posto.</p>
+          </div>
+
+          <div class="carreiras__benefit-card">
+            <div class="carreiras__benefit-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+            </div>
+            <h4>Treinamento Especializado</h4>
+            <p>Capacitação prática em técnicas profissionais de limpeza, produtos e atendimento.</p>
+          </div>
+
+          <div class="carreiras__benefit-card">
+            <div class="carreiras__benefit-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline><polyline points="16 7 22 7 22 13"></polyline></svg>
+            </div>
+            <h4>Plano de Reconhecimento</h4>
+            <p>Oportunidades reais de promoção para cargos de liderança, encarregados e supervisão.</p>
+          </div>
+        </div>
+
+        <!-- Form Box -->
+        <div class="carreiras__form-container" data-animate="fade-up">
+          <div class="carreiras__form-header">
+            <div class="carreiras__form-badge">Formulário de Candidatura</div>
+            <h3 class="carreiras__form-title">Envie seus dados e anexe sua foto</h3>
+            <p class="carreiras__form-desc">Preencha os campos abaixo com atenção. Nosso setor de Recursos Humanos analisará seu perfil com prioridade.</p>
+          </div>
+
+          <form class="form carreiras__form" id="candidaturaForm" novalidate>
+            <!-- Campos de protecao anti-spam e configuracao do servico de e-mail -->
+            <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off" />
+            <input type="hidden" name="_captcha" value="false" />
+            <input type="hidden" id="candidaturaSubject" name="_subject" value="Nova Candidatura / Currículo - HRC Serviços" />
+
+            <div class="form__row">
+              <div class="form__group">
+                <label for="candNome" class="form__label">Nome Completo *</label>
+                <input type="text" id="candNome" name="nome" class="form__input" placeholder="Seu nome completo" required />
+              </div>
+              <div class="form__group">
+                <label for="candTelefone" class="form__label">WhatsApp / Telefone *</label>
+                <input type="tel" id="candTelefone" name="telefone" class="form__input" placeholder="(51) 99999-9999" required />
+              </div>
+            </div>
+
+            <div class="form__row">
+              <div class="form__group">
+                <label for="candEmail" class="form__label">E-mail (opcional)</label>
+                <input type="email" id="candEmail" name="email" class="form__input" placeholder="seuemail@exemplo.com" />
+              </div>
+              <div class="form__group">
+                <label for="candLocal" class="form__label">Cidade e Bairro onde reside *</label>
+                <input type="text" id="candLocal" name="localizacao" class="form__input" placeholder="Ex: Porto Alegre - Menino Deus" required />
+              </div>
+            </div>
+
+            <div class="form__row">
+              <div class="form__group">
+                <label for="candVaga" class="form__label">Vaga de Interesse *</label>
+                <select id="candVaga" name="vaga" class="form__input form__select" required>
+                  <option value="">Selecione a vaga desejada</option>
+                  <option value="Auxiliar de Limpeza e Conservação">Auxiliar de Limpeza e Conservação</option>
+                  <option value="Zelador(a) Predial / Comercial">Zelador(a) Predial / Comercial</option>
+                  <option value="Limpeza de Vidros">Especialista em Limpeza de Vidros</option>
+                  <option value="Limpeza Pós-Obra">Limpeza Pós-Obra e Pesada</option>
+                  <option value="Líder / Encarregado(a) de Equipe">Líder / Encarregado(a) de Equipe</option>
+                  <option value="Banco Geral de Talentos">Banco Geral de Talentos (Outras funções)</option>
+                </select>
+              </div>
+              <div class="form__group">
+                <label for="candDisponibilidade" class="form__label">Disponibilidade de Horário *</label>
+                <select id="candDisponibilidade" name="disponibilidade" class="form__input form__select" required>
+                  <option value="">Selecione seu horário disponível</option>
+                  <option value="Período Integral (Comercial)">Período Integral (Comercial)</option>
+                  <option value="Turno Manhã">Turno Manhã</option>
+                  <option value="Turno Tarde">Turno Tarde</option>
+                  <option value="Turno Noite">Turno Noite</option>
+                  <option value="Escala 12x36 (Dia ou Noite)">Escala 12x36 (Dia ou Noite)</option>
+                  <option value="Disponibilidade Total e Flexível">Disponibilidade Total e Flexível</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form__row">
+              <div class="form__group">
+                <label for="candExp" class="form__label">Experiência na Área *</label>
+                <select id="candExp" name="experiencia" class="form__input form__select" required>
+                  <option value="">Selecione seu nível de experiência</option>
+                  <option value="Mais de 2 anos na função">Mais de 2 anos na função</option>
+                  <option value="Entre 6 meses e 2 anos">Entre 6 meses e 2 anos</option>
+                  <option value="Menos de 6 meses">Menos de 6 meses</option>
+                  <option value="Primeiro Emprego / Sem experiência prévia">Primeiro Emprego / Sem experiência (quero aprender)</option>
+                </select>
+              </div>
+              <div class="form__group">
+                <label for="candCnh" class="form__label">Possui CNH / Condução? *</label>
+                <select id="candCnh" name="cnh" class="form__input form__select" required>
+                  <option value="Não possuo CNH (Transporte público)">Não possuo CNH (Uso transporte público)</option>
+                  <option value="CNH A (Moto)">CNH A (Moto)</option>
+                  <option value="CNH B (Carro)">CNH B (Carro)</option>
+                  <option value="CNH AB (Carro e Moto)">CNH AB (Carro e Moto)</option>
+                  <option value="CNH C / D / E (Profissional)">CNH C / D / E (Profissional)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form__group form__group--full">
+              <label for="candMensagem" class="form__label">Resumo Profissional / Últimos Empregos</label>
+              <textarea id="candMensagem" name="resumo" class="form__input form__textarea" rows="3" placeholder="Conte um pouco sobre suas experiências anteriores, locais onde já trabalhou ou suas principais qualidades."></textarea>
+            </div>
+
+            <!-- UPLOAD DE FOTO / CURRÍCULO MODERNO -->
+            <div class="form__group form__group--full">
+              <label class="form__label">Anexe sua Foto ou Currículo <span class="form__label-tip">(Opcional, mas dá mais destaque à sua vaga)</span></label>
+              
+              <div class="upload-dropzone" id="uploadDropzone">
+                <input type="file" id="candidaturaFile" name="attachment" accept="image/jpeg,image/png,image/webp,image/jpg,application/pdf" class="upload-dropzone__input" />
+                
+                <!-- Estado Inicial / Sem Arquivo -->
+                <div class="upload-dropzone__prompt" id="uploadPrompt">
+                  <div class="upload-dropzone__icon-circle">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                  </div>
+                  <div class="upload-dropzone__text">
+                    <strong>Clique aqui ou arraste sua foto</strong>
+                    <span>Formatos aceitos: JPG, PNG, WEBP ou PDF (Currículo) • Máx. 10MB</span>
+                  </div>
+                  <button type="button" class="btn btn--outline btn--sm upload-dropzone__btn">Escolher Foto / Arquivo</button>
+                </div>
+
+                <!-- Estado com Arquivo / Preview Instantaneo -->
+                <div class="upload-dropzone__preview" id="uploadPreview" style="display:none;">
+                  <div class="upload-preview__thumb-wrap" id="uploadThumbWrap">
+                    <img id="uploadImgPreview" src="" alt="Prévia da foto" class="upload-preview__img" />
+                    <div id="uploadPdfIcon" class="upload-preview__pdf-icon" style="display:none;">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                      <span>PDF</span>
+                    </div>
+                  </div>
+                  <div class="upload-preview__info">
+                    <span class="upload-preview__name" id="uploadFileName">foto.jpg</span>
+                    <span class="upload-preview__size" id="uploadFileSize">1.2 MB</span>
+                    <span class="upload-preview__status">✓ Arquivo pronto para envio</span>
+                  </div>
+                  <button type="button" class="upload-preview__remove" id="uploadRemoveBtn" title="Trocar ou remover arquivo" aria-label="Trocar arquivo">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    <span>Trocar</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Alerta de erro da candidatura -->
+            <div class="form__error" id="candidaturaError" style="display:none;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+              <span id="candidaturaErrorMsg">Ocorreu um erro ao enviar sua candidatura. Por favor, tente novamente ou entre em contato pelo WhatsApp.</span>
+            </div>
+
+            <button type="submit" class="btn btn--primary btn--lg btn--full" id="candidaturaSubmitBtn">
+              <span class="btn__text">ENVIAR MINHA CANDIDATURA</span>
+              <span class="btn__spinner" style="display:none;">
+                <svg class="spinner-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10" stroke-opacity="0.25"></circle><path d="M12 2a10 10 0 0 1 10 10"></path></svg>
+                Enviando sua candidatura e anexo...
+              </span>
+            </button>
+          </form>
+
+          <!-- Mensagem de Sucesso Candidatura -->
+          <div class="form__success carreiras__success" id="candidaturaSuccess" style="display:none;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+            <div>
+              <strong>Candidatura recebida com sucesso! 🎉</strong>
+              <p>Obrigado pelo seu interesse em fazer parte da <strong>HRC Serviços</strong>! Seus dados e arquivo foram encaminhados com segurança para o setor de RH. Entraremos em contato para as próximas etapas.</p>
+              <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:16px;">
+                <button type="button" class="btn btn--outline btn--sm" id="candidaturaResetBtn">Enviar outra candidatura</button>
+                <a href="#" class="btn btn--whatsapp btn--sm whatsapp-candidatura-btn">Falar com RH no WhatsApp</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Candidatura Rapida via WhatsApp -->
+          <div class="carreiras__wa-box">
+            <div class="carreiras__wa-text">
+              <strong>Prefere enviar seu interesse direto pelo WhatsApp?</strong>
+              <p>Nossa equipe de Recursos Humanos também recebe mensagens e dados de candidatos no WhatsApp.</p>
+            </div>
+            <a href="#" class="btn btn--whatsapp btn--md whatsapp-candidatura-btn">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.149-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+              CANDIDATAR PELO WHATSAPP
+            </a>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
     <!-- CTA FINAL -->
     <section class="cta-final section" id="contato">
       <div class="container cta-final__container" data-animate="fade-up">
@@ -871,6 +1093,7 @@
           <li><a href="#condominios">Condomínios</a></li>
           <li><a href="#empresas">Empresas</a></li>
           <li><a href="#orcamento">Orçamento</a></li>
+          <li><a href="#trabalhe-conosco">Trabalhe Conosco</a></li>
           <li><a href="#contato">Contato</a></li>
         </ul>
       </div>
@@ -1006,7 +1229,7 @@
 
   <div class="nav__overlay" id="navOverlay"></div>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-  <script src="config.js?v=2.5"></script>
-  <script src="main.js?v=2.5"></script>
+  <script src="config.js?v=2.6"></script>
+  <script src="main.js?v=2.6"></script>
 </body>
 </html>
