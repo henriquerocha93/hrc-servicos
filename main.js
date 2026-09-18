@@ -178,11 +178,14 @@
       entries.forEach(entry => {
         if (entry.isIntersecting) {
           links.forEach(l => l.classList.remove('active'));
-          const active = document.querySelector('.nav__link[href="#' + entry.target.id + '"]');
+          let active = document.querySelector('.nav__link[href="#' + entry.target.id + '"]');
+          if (!active && (entry.target.id === 'condominios' || entry.target.id === 'empresas')) {
+            active = document.querySelector('.nav__link[href="#servicos"]');
+          }
           if (active) active.classList.add('active');
         }
       });
-    }, { threshold: 0.3 });
+    }, { threshold: 0.25 });
 
     sections.forEach(s => obs.observe(s));
   }

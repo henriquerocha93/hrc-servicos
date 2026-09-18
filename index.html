@@ -182,7 +182,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
-  <link rel="stylesheet" href="style.css?v=2.6" />
+  <link rel="stylesheet" href="style.css?v=2.7" />
 </head>
 <body>
 
@@ -201,16 +201,51 @@
       <ul class="nav__menu" id="navMenu">
         <li><a href="#inicio" class="nav__link">Início</a></li>
         <li><a href="#sobre" class="nav__link">Sobre</a></li>
-        <li><a href="#servicos" class="nav__link">Serviços</a></li>
-        <li><a href="#condominios" class="nav__link">Condomínios</a></li>
-        <li><a href="#empresas" class="nav__link">Empresas</a></li>
+        <li class="nav__item--dropdown">
+          <a href="#servicos" class="nav__link nav__link--dropdown">
+            <span>Serviços</span>
+            <svg class="nav__chevron" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </a>
+          <div class="nav__dropdown-menu">
+            <a href="#condominios" class="nav__dropdown-item">
+              <span class="nav__dropdown-icon">🏢</span>
+              <div>
+                <strong>Condomínios</strong>
+                <small>Limpeza predial e áreas comuns</small>
+              </div>
+            </a>
+            <a href="#empresas" class="nav__dropdown-item">
+              <span class="nav__dropdown-icon">💼</span>
+              <div>
+                <strong>Empresas & Escritórios</strong>
+                <small>Ambientes comerciais e lojas</small>
+              </div>
+            </a>
+            <a href="#servicos" class="nav__dropdown-item">
+              <span class="nav__dropdown-icon">🛡️</span>
+              <div>
+                <strong>Zeladoria Profissional</strong>
+                <small>Conservação e apoio ao síndico</small>
+              </div>
+            </a>
+            <a href="#servicos" class="nav__dropdown-item">
+              <span class="nav__dropdown-icon">✨</span>
+              <div>
+                <strong>Vidros & Pós-Obra</strong>
+                <small>Higienização técnica especializada</small>
+              </div>
+            </a>
+          </div>
+        </li>
         <li><a href="#diferenciais" class="nav__link">Diferenciais</a></li>
         <li><a href="#regioes" class="nav__link">Onde Atuamos</a></li>
-        <li><a href="#orcamento" class="nav__link">Orçamento</a></li>
         <li><a href="#trabalhe-conosco" class="nav__link">Trabalhe Conosco</a></li>
         <li><a href="#contato" class="nav__link">Contato</a></li>
       </ul>
-      <a href="#orcamento" class="btn btn--primary nav__cta">SOLICITAR ORÇAMENTO</a>
+      <a href="#orcamento" class="btn btn--primary nav__cta">
+        <span>SOLICITAR ORÇAMENTO</span>
+        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      </a>
       <button class="nav__hamburger" id="navHamburger" aria-label="Abrir menu">
         <span></span><span></span><span></span>
       </button>
@@ -1229,7 +1264,7 @@
 
   <div class="nav__overlay" id="navOverlay"></div>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-  <script src="config.js?v=2.6"></script>
-  <script src="main.js?v=2.6"></script>
+  <script src="config.js?v=2.7"></script>
+  <script src="main.js?v=2.7"></script>
 </body>
 </html>
